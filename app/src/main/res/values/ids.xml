@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="imageView2" type="id" />
+    <item name="tvphone" type="id" />
+    <item name="tvsuccesscount" type="id" />
+    <item name="divider" type="id" />
+    <item name="tvsuccessprice" type="id" />
+    <item name="tvfailedcount" type="id" />
+    <item name="tvfailedprice" type="id" />
+    <item name="tvcon" type="id" />
+    <item name="tvaddress" type="id" />
+    <item name="btReject" type="id" />
+    <item name="btAccept" type="id" />
+    <item name="tvPrice" type="id" />
+</resources>
