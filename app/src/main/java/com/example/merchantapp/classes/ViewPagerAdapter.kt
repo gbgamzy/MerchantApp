@@ -41,22 +41,21 @@ class ViewPagerAdapter(
             holder.rv.adapter=adapter
             adapter.notifyDataSetChanged()
         }
-        else if(position==2){
-            val adapter: MenuChildAdapter = MenuChildAdapter(dispatched, adapterInterface = i,context)
-            holder.rv.layoutManager= LinearLayoutManager(context)
-            holder.rv.itemAnimator= DefaultItemAnimator()
-            holder.rv.adapter=adapter
-            adapter.notifyDataSetChanged()
-        }
+
         else{
-            val adapter: ProcessingAdapter = ProcessingAdapter(processing, adapterInterface = i,context)
+            val a=i.getRiders1()
+            var names:ArrayList<String> = ArrayList()
+            a.forEach {
+                names.add(it.name)
+            }
+            Log.d("names",a.toString()+names.toString())
+            val adapter: ProcessingAdapter = ProcessingAdapter(processing,a,names, adapterInterface = i,context)
             holder.rv.layoutManager= LinearLayoutManager(context)
             holder.rv.itemAnimator= DefaultItemAnimator()
             holder.rv.adapter=adapter
             adapter.notifyDataSetChanged()
 
         }
-        Log.d("adapter",processing.toString())
 
 
 
@@ -65,6 +64,6 @@ class ViewPagerAdapter(
 
 
     override fun getItemCount(): Int {
-        return 3
+        return 2
     }
 }

@@ -31,6 +31,7 @@ class HomeFragment : Fragment(),AdapterInterface {
     var pending:ArrayList<Order> =ArrayList()
     var processing:ArrayList<Order> =ArrayList()
     var dispatched:ArrayList<Order> =ArrayList()
+    var riders:ArrayList<DeliveryBoy> =ArrayList()
     private var _binding: FragmentHomeBinding? = null
 
     private val binding get() = _binding!!
@@ -76,7 +77,7 @@ class HomeFragment : Fragment(),AdapterInterface {
 
         })
 
-        homeViewModel.dispatched?.observe(viewLifecycleOwner,Observer<ArrayList<Order>>{
+        homeViewModel.dispatched?.observe(viewLifecycleOwner, {
             dispatched.clear()
             dispatched.addAll(it)
 
@@ -88,17 +89,25 @@ class HomeFragment : Fragment(),AdapterInterface {
         return view
     }
 
-    override fun getRiders(): List<DeliveryBoy>? {
-        var l:List<DeliveryBoy> ?=null
-        CoroutineScope(Dispatchers.IO).launch{
-            l=homeViewModel.getRiders()
-        }
+    override fun getRiders1(): ArrayList<DeliveryBoy> {
+        val l=homeViewModel.riders
+        Log.d("vmHomeRiders",l.toString())
+
         return l
+
     }
 
     override fun acceptOrder(_id: String, o: Order) {
+        CoroutineScope(Dispatchers.IO).launch {
+            homeViewModel.dispatch(_id,o)
+            Log.d("HomeAccept",_id+o.toString())
+        }
+    }
+
+    override fun deleteMenu(category: String) {
         TODO("Not yet implemented")
     }
+
     fun refresh(){
 
         CoroutineScope(Dispatchers.Main).launch {

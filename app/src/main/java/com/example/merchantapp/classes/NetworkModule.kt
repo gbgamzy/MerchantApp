@@ -23,7 +23,7 @@ object NetworkModule {
 
     @Provides
     fun providesBaseUrl(): String {
-        return "http://192.168.1.6:1234"
+        return "http://192.168.1.5:1234"
     }
 
 

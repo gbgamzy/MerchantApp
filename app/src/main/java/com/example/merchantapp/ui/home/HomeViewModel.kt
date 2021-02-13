@@ -22,6 +22,7 @@ class HomeViewModel @ViewModelInject constructor(val api:Network,val db:HomeDao)
     val pending: MutableLiveData<ArrayList<Order>> = MutableLiveData()
     val dispatched: MutableLiveData<ArrayList<Order>> = MutableLiveData()
     val processing: MutableLiveData<ArrayList<Order>> = MutableLiveData()
+    var riders:ArrayList<DeliveryBoy> =ArrayList()
 
     suspend fun refreshHome(){
         db.clearOrder()
@@ -43,14 +44,17 @@ class HomeViewModel @ViewModelInject constructor(val api:Network,val db:HomeDao)
             db.addOrder(it)
         }
 
-
+        getRiders()
         withContext(Dispatchers.Main){
             pending.value = list
             processing.value = list1
             dispatched.value = list2
         }
-        Log.d("vm", list1.toString())
 
+
+    }
+    suspend fun dispatch(_id: String, o: Order){
+        api.acceptOrder(_id,o)
     }
 
     suspend fun getDispatchedOrders(){
@@ -58,8 +62,20 @@ class HomeViewModel @ViewModelInject constructor(val api:Network,val db:HomeDao)
         api.getDispatchedOrders().body()?.let { list2.addAll(it) }
         dispatched?.value=list2
     }
-    suspend fun getRiders(): List<DeliveryBoy>? {
-        return api.getRiders().body()
+    suspend fun getRiders() {
+        riders.clear()
+        val b=api.getRiders().body()
+        val l:ArrayList<DeliveryBoy> =ArrayList()
+        if (b != null) {
+            l.addAll(b)
+        }
+        riders=l
+
+
+
+
+
+
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.ajubamerchant.classes
 
+import android.graphics.Bitmap
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
@@ -20,6 +21,30 @@ data class Order(
 ){
 
 }
+data class Image(
+        var name: String,
+        var image: Bitmap
+)
+
+data class Food(
+
+        var name:String,
+        var price:Int,
+        var image:String,
+        var quantity:Int=0
+
+)
+
+data class FoodMenu(
+
+        var category:String,
+
+        var list:List<Food>
+
+){
+
+
+}
 
 class TypeConverter{
     @TypeConverter
@@ -34,6 +59,15 @@ class TypeConverter{
     fun fromAddress(value:Address?)= Gson().toJson(value)
     @TypeConverter
     fun toAddress(value:String?)= Gson().fromJson(value,Address::class.java)
+    @TypeConverter
+    fun fromFoodList(value:List<Food>?)= Gson().toJson(value)
+    @TypeConverter
+    fun toFoodList(value:String?)= Gson().fromJson(value,Array<Food>::class.java).toList()
+    @TypeConverter
+    fun fromContent(value:List<String>?)=Gson().toJson(value)
+    @TypeConverter
+    fun toContent(value:String?)= Gson().fromJson(value,Array<String>::class.java).toList()
+
 }
 data class DeliveryBoy(
     var name:String="",
