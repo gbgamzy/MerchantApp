@@ -28,27 +28,25 @@ class HomeViewModel @ViewModelInject constructor(val api:Network,val db:HomeDao)
         db.clearOrder()
         val list: ArrayList<Order> =ArrayList()
         val list1: ArrayList<Order> =ArrayList()
-        val list2: ArrayList<Order> =ArrayList()
+
         api.getPendingOrders().body()?.let { it ->
             list.addAll(it)
         it.forEach { m->
             db.addOrder(m)
         }}
         api.getProcessingOrders().body()?.let { list1.addAll(it) }
-        api.getDispatchedOrders().body()?.let { list2.addAll(it) }
+
 
         list1.forEach {
             db.addOrder(it!!)
         }
-        list2.forEach {
-            db.addOrder(it)
-        }
+
 
         getRiders()
         withContext(Dispatchers.Main){
             pending.value = list
             processing.value = list1
-            dispatched.value = list2
+
         }
 
 

@@ -1,32 +1,34 @@
-package com.example.merchantapp.ui.gallery
+package com.example.merchantapp.ui.foodMenu
 
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ajubamerchant.classes.*
 import com.example.merchantapp.R
+import com.example.merchantapp.adapters.FoodMenuAdapter
+import com.example.merchantapp.classes.DNALOG
 import com.example.merchantapp.databinding.FragmentGalleryBinding
-import com.example.merchantapp.databinding.FragmentHomeBinding
-import com.example.merchantapp.ui.home.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.dialog_add_menu.view.*
+import kotlinx.android.synthetic.main.fragment_gallery.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 @AndroidEntryPoint
-class GalleryFragment : Fragment(),AdapterInterface {
+class FoodMenuFragment : Fragment(),AdapterInterface {
 
-    private lateinit var galleryViewModel: GalleryViewModel
+    private lateinit var foodMenuViewModel: FoodMenuViewModel
     private var _binding: FragmentGalleryBinding? = null
-    var lis:ArrayList<FoodMenu> = ArrayList<FoodMenu>()
-    var img:ArrayList<Image> = ArrayList<Image>()
+    var lis:ArrayList<FoodMenu> = ArrayList()
+    var img:ArrayList<Image> = ArrayList()
+
 
     private val binding get() = _binding!!
 
@@ -35,10 +37,15 @@ class GalleryFragment : Fragment(),AdapterInterface {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        galleryViewModel =
-            ViewModelProvider(this).get(GalleryViewModel::class.java)
+        foodMenuViewModel =
+            ViewModelProvider(this).get(FoodMenuViewModel::class.java)
         _binding = FragmentGalleryBinding.inflate(inflater, container, false)
         val view = binding.root
+        var ad=FoodMenuAdapter(lis,img,this,requireContext())
+        binding.rvFoodMenu.layoutManager= LinearLayoutManager(context)
+
+        binding.rvFoodMenu.adapter=ad
+        refresh()
 
         binding.fabFoodMenu.setOnClickListener{
             val view=LayoutInflater.from(context).inflate(R.layout.dialog_add_menu,null)
@@ -48,6 +55,7 @@ class GalleryFragment : Fragment(),AdapterInterface {
                 dialog.setView(view)
                 dialog.setPositiveButton("Add",{ dialogInterface: DialogInterface, i: Int ->
                     addMenu(view.editTextTextPersonName.text.toString())
+                    refresh()
                 })
                 dialog.create().show()
             }
@@ -59,11 +67,17 @@ class GalleryFragment : Fragment(),AdapterInterface {
         }
 
 
-        galleryViewModel.foodMenu.observe(viewLifecycleOwner,{
-            lis=it
+        foodMenuViewModel.foodMenu.observe(viewLifecycleOwner,{
+            lis.clear()
+            lis.addAll(it)
+
+            ad!!.notifyDataSetChanged()
         })
-        galleryViewModel.images1.observe(viewLifecycleOwner,{
-            img=it
+        foodMenuViewModel.images1.observe(viewLifecycleOwner,{
+            img.clear()
+            img.addAll(it)
+
+            ad!!.notifyDataSetChanged()
         })
 
 
@@ -78,7 +92,12 @@ class GalleryFragment : Fragment(),AdapterInterface {
     private fun addMenu(s: String) {
 
         CoroutineScope(Dispatchers.IO).launch{
-            galleryViewModel.addMenu(s)
+            foodMenuViewModel.addMenu(s)
+        }
+    }
+    private fun refresh(){
+        CoroutineScope(Dispatchers.Main).launch{
+            foodMenuViewModel.refresh()
         }
     }
 
@@ -91,6 +110,32 @@ class GalleryFragment : Fragment(),AdapterInterface {
     }
 
     override fun deleteMenu(category: String) {
+        CoroutineScope(Dispatchers.Main).launch{
+            DNALOG.show("delte menu",category)
+            foodMenuViewModel.deleteMenu(category)
+            val l=lis.find{
+                it.category==category
+            }
+            if (l != null) {
+                l.list.forEach {
+                    foodMenuViewModel.deleteFood(category,it)
+                    foodMenuViewModel.deleteImage(it.image)
+
+                }
+            }
+            refresh()
+        }
+
 
     }
+
+    override fun deleteRider(phone: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteFood(category: String, food: Food) {
+        TODO("Not yet implemented")
+    }
+
+
 }

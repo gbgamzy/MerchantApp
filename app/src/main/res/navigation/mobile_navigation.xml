@@ -13,13 +13,18 @@
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.example.merchantapp.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
+        android:name="com.example.merchantapp.ui.foodMenu.FoodMenuFragment"
+        android:label="Food Menu"
         tools:layout="@layout/fragment_gallery" />
 
     <fragment
         android:id="@+id/nav_slideshow"
-        android:name="com.example.merchantapp.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
+        android:name="com.example.merchantapp.ui.riders.RiderFragment"
+        android:label="Riders"
         tools:layout="@layout/fragment_slideshow" />
+    <fragment
+        android:id="@+id/nav_prices"
+        android:name="com.example.merchantapp.ui.PricesFragment"
+        android:label="Delivery Rates"
+        tools:layout="@layout/fragment_prices" />
 </navigation>

@@ -1,4 +1,4 @@
-package com.example.ajubamerchant.classes
+package com.example.merchantapp.adapters
 
 import android.content.Context
 import android.util.Log
@@ -8,15 +8,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ajubamerchant.classes.AdapterInterface
+import com.example.ajubamerchant.classes.Order
 import com.example.merchantapp.R
-import com.example.merchantapp.classes.ProcessingAdapter
-import com.example.merchantapp.ui.home.HomeFragment
 
 
 class ViewPagerAdapter(
 
-        val pending:ArrayList<Order>, val dispatched:ArrayList<Order>, val processing:ArrayList<Order>,
-        private val context: Context, private val i: AdapterInterface
+    val pending:ArrayList<Order>, val processing:ArrayList<Order>,
+    private val context: Context, private val i: AdapterInterface
 ) :
     RecyclerView.Adapter<ViewPagerAdapter.ViewHolder>(){
 

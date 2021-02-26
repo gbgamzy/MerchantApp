@@ -8,18 +8,21 @@ import retrofit2.Response
 import retrofit2.http.*
 
 
-interface Network {
+interface   Network {
+    @POST("/Ajuba/admin/{phone}/{registrationToken}")
+    suspend fun login(@Path("phone")phone:String , @Path("registrationToken")registrationToken:String)
+    :Response<Message>
 
     @GET("/Ajuba/admin/getDetails/{phone}")
     suspend fun getDetails(@Path("phone") phone: String): Response<List<Order>>
 
-    @POST("/Ajuba/admin/acceptOrder/{id}")
+    @POST("/Ajuba/acceptOrder/{id}")
     suspend fun acceptOrder(@Path("id") id: String, @Body order: Order): Response<Message>
 
-    @POST("/Ajuba/admin/processOrder/{id}")
+    @POST("/Ajuba/processOrder/{id}")
     suspend fun processOrders(@Path("id") id: String): Response<Message>
 
-    @POST("/Ajuba/admin/rejectOrder/{id}")
+    @POST("/Ajuba/rejectOrder/{id}")
     suspend fun rejectOrders(@Path("id") id: String, @Body order: Order): Response<Message>
 
     @GET("/Ajuba/admin/getPendingOrders")
@@ -40,22 +43,22 @@ interface Network {
 
     @Multipart
     @POST("/Ajuba/images")
-    suspend fun postImage(@Part image: MultipartBody.Part, @Part("id") id:RequestBody?  )
+    suspend fun postImage(@Part image: MultipartBody.Part, @Part("id") id:RequestBody?  ):Response<Message>
 
     @GET("/Ajuba/customer/menu")
     suspend fun getMenu():Response<List<FoodMenu>>
 
     @GET("/Ajuba/images/{img_id}")
-    suspend fun getImage(@Path("img_id") id:String ):Response<ResponseBody>
+    suspend fun getImage(@Path("img_id") id:String ):Response<ResponseBody?>
 
     @DELETE("/Ajuba/images/{img_id}")
-    suspend fun deleteImage(@Path("img_id") id:String )
+    suspend fun deleteImage(@Path("img_id") id:String ):Response<Message>
 
 
-    @DELETE("/Ajuba/admin/foodMenu/{category}")
-    suspend fun deleteMenu(@Path("category")category:String)
+    @DELETE("/Ajuba/admin/foodMenu/category/{category}")
+    suspend fun deleteMenu(@Path("category")category:String):Response<Message>
 
-    @POST("/Ajuba/admin/foodMenu/{category}")
+    @POST("/Ajuba/admin/foodMenu/category/{category}")
     suspend fun addMenu(@Path("category")category:String)
 
 
@@ -65,7 +68,23 @@ interface Network {
 
 
     @DELETE("/Ajuba/admin/foodMenu/{category}/food/{name}")
-    suspend fun deleteFood(@Path("category")category:String,@Path("name")name:String)
+    suspend fun deleteFood(@Path("category")category:String,@Path("name")name:String):Response<Message>
+
+
+    @GET("/Ajuba/admin/prices")
+    suspend fun getPrices(): Response<Price>
+
+    @POST("/Ajuba/admin/prices")
+    suspend fun uploadPrices( @Body price: Price): Response<Message>
+
+    @GET("/Ajuba/admin/getRidersList")
+    suspend fun getRidersList():Response<List<Rider>>
+
+    @POST("/Ajuba/admin/getRidersList")
+    suspend fun uploadRider(@Body rider:Rider):Response<Message>
+    @DELETE("/Ajuba/admin/getRidersList/{phone}")
+    suspend fun deleteRider(@Path("phone")phone:String):Response<Message>
+
 
 
 

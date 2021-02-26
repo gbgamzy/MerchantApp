@@ -13,10 +13,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.ajubamerchant.classes.AdapterInterface
 import com.example.ajubamerchant.classes.DeliveryBoy
+import com.example.ajubamerchant.classes.Food
 import com.example.ajubamerchant.classes.Order
-import com.example.ajubamerchant.classes.ViewPagerAdapter
-import com.example.merchantapp.R
+import com.example.merchantapp.adapters.ViewPagerAdapter
+import com.example.merchantapp.classes.DNASnackBar
 import com.example.merchantapp.databinding.FragmentHomeBinding
+import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.CoroutineScope
@@ -30,11 +32,17 @@ class HomeFragment : Fragment(),AdapterInterface {
     private lateinit var homeViewModel: HomeViewModel
     var pending:ArrayList<Order> =ArrayList()
     var processing:ArrayList<Order> =ArrayList()
-    var dispatched:ArrayList<Order> =ArrayList()
+
     var riders:ArrayList<DeliveryBoy> =ArrayList()
     private var _binding: FragmentHomeBinding? = null
 
     private val binding get() = _binding!!
+
+    override fun onResume() {
+        super.onResume()
+        refresh()
+
+    }
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -53,9 +61,20 @@ class HomeFragment : Fragment(),AdapterInterface {
 
 
         })
-                refresh()
-        val adapter=ViewPagerAdapter(pending,dispatched,processing,requireContext(),this)
+
+        val adapter= ViewPagerAdapter(pending,processing,requireContext(),this)
         binding.vpHome.adapter=adapter
+        TabLayoutMediator(binding.tbHome, binding.vpHome){ tab, position->
+            if(position==0){
+                tab.text="Pending"
+            }
+            else{
+                tab.text="Processing"
+            }
+
+        }.attach()
+
+
 
 
         homeViewModel.pending?.observe(viewLifecycleOwner,Observer<ArrayList<Order>>{
@@ -77,14 +96,7 @@ class HomeFragment : Fragment(),AdapterInterface {
 
         })
 
-        homeViewModel.dispatched?.observe(viewLifecycleOwner, {
-            dispatched.clear()
-            dispatched.addAll(it)
 
-            adapter.notifyDataSetChanged()
-
-
-        })
 
         return view
     }
@@ -108,11 +120,27 @@ class HomeFragment : Fragment(),AdapterInterface {
         TODO("Not yet implemented")
     }
 
+    override fun deleteRider(phone: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteFood(category: String, food: Food) {
+        TODO("Not yet implemented")
+    }
+
     fun refresh(){
 
-        CoroutineScope(Dispatchers.Main).launch {
-            try{ homeViewModel.refreshHome() }
-            catch (err:Exception){Log.d("vmHomeRefresh",err.toString())}
+        try{
+            CoroutineScope(Dispatchers.Main).launch {
+                try {
+                    homeViewModel.refreshHome()
+                } catch (err: Exception) {
+                    Log.d("vmHomeRefresh", err.toString())
+                }
+            }
+        }
+        catch(err:Exception){
+            DNASnackBar.show(context,"We are facing some problems!")
         }
 
     }

@@ -1,12 +1,16 @@
 package com.example.ajubamerchant.classes
 
 import android.graphics.Bitmap
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import com.google.gson.Gson
+import kotlinx.android.parcel.Parcelize
+import kotlinx.android.parcel.RawValue
 import java.util.*
 @Entity(tableName = "orders")
+
 data class Order(
         @PrimaryKey(autoGenerate = false)
         var _id:String,
@@ -18,12 +22,30 @@ data class Order(
         var customerPhone:String="",
         var deliveryBoy: DeliveryBoy = DeliveryBoy("","")
 
-){
+)
+@Parcelize
+data class ord(
+    var _id:String,
+    var contents:@RawValue List<Content>,
+    var price: Int,
+    var date: String,
+    var status:String,
+    var address:@RawValue Address,
+    var customerPhone:String="",
+    var deliveryBoy:@RawValue DeliveryBoy = DeliveryBoy("","")
 
-}
+
+):Parcelable
+@Parcelize
+data class Rider(
+        var name:String?,
+        var phone:String?,
+        var orders: @RawValue List<ord>?
+
+):Parcelable
 data class Image(
-        var name: String,
-        var image: Bitmap
+        var name: String?,
+        var image: Bitmap?
 )
 
 data class Food(
@@ -81,8 +103,20 @@ data class Content(
     var quantity:Int=0
 )
 data class Address(
-    var title:String,
-    var address:String,
-    var latitude:String,
-    var longitude:String,
+    var houseName:String,
+    var streetAddress:String,
+    var latitude:Double,
+    var longitude:Double,
+)
+data class Price(
+    var dist1:Float?,
+    var price1:Float?,
+    var dist2:Float?,
+    var price2:Float?,
+    var dist3:Float?,
+    var price3:Float?
+)
+data class Admin(
+    var phone:String?,
+    var registrationToken:String?
 )

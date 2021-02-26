@@ -1,21 +1,22 @@
-package com.example.merchantapp.classes
+@file:Suppress("DEPRECATION")
+
+package com.example.merchantapp.adapters
 
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.inflate
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ajubamerchant.classes.AdapterInterface
 import com.example.ajubamerchant.classes.DeliveryBoy
 import com.example.ajubamerchant.classes.Order
-import com.example.merchantapp.OrderPanelActivity
 import com.example.merchantapp.R
 import kotlinx.android.synthetic.main.dialog_spinner.view.*
 
@@ -37,6 +38,7 @@ class ProcessingAdapter(
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         var image: ImageView =view.findViewById(R.id.imageView5)
         var name: TextView =view.findViewById(R.id.textView2)
+
         var price: TextView =view.findViewById(R.id.tvFoodPrice)
         var layout: LinearLayout =view.findViewById(R.id.llOrder)
 
@@ -45,11 +47,13 @@ class ProcessingAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.image.setBackgroundDrawable(ContextCompat.getDrawable(context,R.drawable.order_status_processing))
+
 
         holder.price.text= list[position].price.toString()
         var s=""
         list[position].contents.forEach {
-            s+= it.name+"x"+it.quantity+" "
+            s+= it.name+" x "+it.quantity+" "
         }
         holder.name.text=s
         holder.layout.setOnClickListener {
@@ -73,7 +77,7 @@ class ProcessingAdapter(
                 onItemSelectedListener=this@ProcessingAdapter
             }
 
-            view.btDone.setOnClickListener{
+            dialog.setPositiveButton("Done"){ dialogInterface: DialogInterface, i: Int ->
                 done(position)
             }
 
@@ -96,7 +100,7 @@ class ProcessingAdapter(
             if (r != null) {
                 o.deliveryBoy=r
             }
-            Log.d("proceadap",o.toString())
+
             adapterInterface.acceptOrder(o._id,o)
 
 
