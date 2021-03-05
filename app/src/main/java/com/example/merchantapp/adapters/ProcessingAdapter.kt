@@ -51,11 +51,9 @@ class ProcessingAdapter(
 
 
         holder.price.text= list[position].price.toString()
-        var s=""
-        list[position].contents.forEach {
-            s+= it.name+" x "+it.quantity+" "
-        }
-        holder.name.text=s
+
+
+        holder.name.text=list[position].contents
         holder.layout.setOnClickListener {
             val view=LayoutInflater.from(context).inflate(R.layout.dialog_spinner,null)
             val dialog=AlertDialog.Builder(context)
@@ -94,14 +92,15 @@ class ProcessingAdapter(
     fun done(position:Int){
         if(name!=""){
             val r= riders?.find {
-                it.name==name
+                it.deliveryBoyName==name
             }
             val o=list[position]
             if (r != null) {
-                o.deliveryBoy=r
+                o.deliveryBoyName=r.deliveryBoyName
+                o.deliveryBoyPhone=r.deliveryBoyPhone
             }
 
-            adapterInterface.acceptOrder(o._id,o)
+            adapterInterface.acceptOrder(o.OID!!,o)
 
 
 

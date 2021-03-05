@@ -41,15 +41,13 @@ class MenuChildAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         holder.price.text= list[position].price.toString()
-        var s=""
-        list[position].contents.forEach {
-            s+= it.name+" x "+it.quantity+" "
-        }
-        holder.name.text=s
+
+
+        holder.name.text=list[position].contents
         holder.layout.setOnClickListener {
             val intent: Intent =Intent(context, OrderPanelActivity::class.java)
-            intent.putExtra("phone",list[position].customerPhone)
-            intent.putExtra("id",list[position]._id)
+            intent.putExtra("phone",list[position].phone)
+            intent.putExtra("id",list[position].OID)
 
 
 

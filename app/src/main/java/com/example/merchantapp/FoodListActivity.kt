@@ -64,21 +64,18 @@ class FoodListActivity : AppCompatActivity(), AdapterInterface {
     }
     fun reload(){
         CoroutineScope(Dispatchers.Main).launch {
-            val list = api.getMenu()?.body()
-            f.clear()
-            if (list != null) {
-                f.addAll(list)
-            }
-            val p= f.find {
-                it.category==category
-            }
-            d.clear()
-
-            if(p?.list?.size  != 0){
-                if (p != null) {
-                    d.addAll(p.list)
+            val list: ArrayList<Food> = ArrayList()
+            api.getFood().body()?.forEach {
+                if(it.category==category){
+                    list.add(it)
                 }
             }
+
+
+            d.clear()
+
+            d.addAll(list)
+
             Log.d("FoodListDList",d.toString())
             try{
                 reloadImages(d)
@@ -156,9 +153,10 @@ class FoodListActivity : AppCompatActivity(), AdapterInterface {
         TODO("Not yet implemented")
     }
 
-    override fun acceptOrder(_id: String, o: Order) {
+    override fun acceptOrder(_id: Int, o: Order) {
         TODO("Not yet implemented")
     }
+
 
     override fun deleteMenu(category: String) {
         TODO("Not yet implemented")

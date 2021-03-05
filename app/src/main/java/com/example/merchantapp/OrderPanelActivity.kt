@@ -29,7 +29,7 @@ class OrderPanelActivity  : AppCompatActivity() {
     lateinit var db: HomeDao
     var list: ArrayList<Order> = ArrayList()
     var order: Order? = null
-    var s = ""
+
     var sc = 0
     var sp = 0
     var fc = 0
@@ -53,21 +53,19 @@ class OrderPanelActivity  : AppCompatActivity() {
                 order = api.getOrder(id).body()
                 Log.d("vmOrder Panel",order.toString())
 
-                order?.contents?.forEach {
-                    s += it.name + " x " + it.quantity + " "
-                }
-                tvaddress.text = order?.address?.streetAddress
-                tvcon.text = s
+
+                tvaddress.text = order?.streetAddress
+                tvcon.text = order?.contents
                 tvphone.text = phone
                 tvPrice.text = order?.price.toString()
                 list.forEach {
                     if (it.status == "C") {
                         sc++
-                        sp += it.price
+                        sp += it.price!!
 
                     } else if (it.status == "D") {
                         fc++
-                        fp += it.price
+                        fp += it.price!!
 
                     }
 

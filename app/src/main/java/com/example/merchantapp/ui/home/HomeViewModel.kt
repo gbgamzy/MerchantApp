@@ -1,8 +1,6 @@
 package com.example.merchantapp.ui.home
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.ajubamerchant.classes.DeliveryBoy
@@ -11,8 +9,6 @@ import com.example.ajubamerchant.classes.Order
 import com.example.merchantapp.classes.HomeDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -20,14 +16,16 @@ import kotlin.collections.ArrayList
 class HomeViewModel @ViewModelInject constructor(val api:Network,val db:HomeDao): ViewModel() {
 
     val pending: MutableLiveData<ArrayList<Order>> = MutableLiveData()
-    val dispatched: MutableLiveData<ArrayList<Order>> = MutableLiveData()
+
     val processing: MutableLiveData<ArrayList<Order>> = MutableLiveData()
+    val toBeAccepted: MutableLiveData<ArrayList<Order>> = MutableLiveData()
     var riders:ArrayList<DeliveryBoy> =ArrayList()
 
     suspend fun refreshHome(){
         db.clearOrder()
         val list: ArrayList<Order> =ArrayList()
         val list1: ArrayList<Order> =ArrayList()
+        val list2: ArrayList<Order> =ArrayList()
 
         api.getPendingOrders().body()?.let { it ->
             list.addAll(it)
@@ -38,7 +36,9 @@ class HomeViewModel @ViewModelInject constructor(val api:Network,val db:HomeDao)
 
 
         list1.forEach {
-            db.addOrder(it!!)
+            if(it.deliveryBoyPhone==null || it.deliveryBoyPhone!!.length==0){
+                list2.add(it)
+            }
         }
 
 
@@ -46,20 +46,17 @@ class HomeViewModel @ViewModelInject constructor(val api:Network,val db:HomeDao)
         withContext(Dispatchers.Main){
             pending.value = list
             processing.value = list1
+            toBeAccepted.value=list2
 
         }
 
 
     }
-    suspend fun dispatch(_id: String, o: Order){
+    suspend fun dispatch(_id: Int, o: Order){
         api.acceptOrder(_id,o)
     }
 
-    suspend fun getDispatchedOrders(){
-        var list2:ArrayList<Order> =ArrayList()
-        api.getDispatchedOrders().body()?.let { list2.addAll(it) }
-        dispatched?.value=list2
-    }
+
     suspend fun getRiders() {
         riders.clear()
         val b=api.getRiders().body()

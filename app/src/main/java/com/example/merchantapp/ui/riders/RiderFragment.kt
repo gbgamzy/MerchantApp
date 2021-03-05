@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 class RiderFragment : Fragment(),AdapterInterface {
 
     private lateinit var riderViewModel: RiderViewModel
-    var list:ArrayList<Rider> = ArrayList()
+    var list:ArrayList<DeliveryBoy> = ArrayList()
     var adapter:RiderAdapter ?= null
     private var _binding: FragmentSlideshowBinding? = null
     private val binding get() = _binding!!
@@ -53,7 +53,7 @@ class RiderFragment : Fragment(),AdapterInterface {
             dialog.setView(view)
             dialog.setTitle("Add Rider")
             dialog.setPositiveButton("Done"){ dialogInterface: DialogInterface, i: Int ->
-                var r:Rider = Rider(view.etRiderName.text.toString(),view.etRiderPhone.text.toString(),null)
+                var r:DeliveryBoy = DeliveryBoy(0,view.etRiderName.text.toString() ,view.etRiderPhone.text.toString())
                 Log.d("vmvmRider",r.toString())
                CoroutineScope(Dispatchers.IO).launch{
 
@@ -91,7 +91,7 @@ class RiderFragment : Fragment(),AdapterInterface {
         TODO("Not yet implemented")
     }
 
-    override fun acceptOrder(_id: String, o: Order) {
+    override fun acceptOrder(_id: Int, o: Order) {
         TODO("Not yet implemented")
     }
 

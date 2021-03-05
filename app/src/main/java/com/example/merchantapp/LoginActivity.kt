@@ -65,7 +65,8 @@ class LoginActivity : AppCompatActivity() {
                 verifyCode(editTextOtp.text.toString())
             }
             catch(err:Exception){
-                Log.d("LoginERror",err.toString())
+
+                DNASnackBar.show(this,"Some Error Occurred!")
             }
 
         }
@@ -124,6 +125,9 @@ class LoginActivity : AppCompatActivity() {
                                         startActivity(intent, null)
 
                                 }
+                                else{
+                                    DNASnackBar.show(this@LoginActivity,"You are not an Admin")
+                                    }
 
 
 

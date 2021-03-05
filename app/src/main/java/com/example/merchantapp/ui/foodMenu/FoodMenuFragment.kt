@@ -32,6 +32,13 @@ class FoodMenuFragment : Fragment(),AdapterInterface {
 
     private val binding get() = _binding!!
 
+    override fun onResume() {
+        super.onResume()
+
+        refresh()
+
+    }
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -45,7 +52,7 @@ class FoodMenuFragment : Fragment(),AdapterInterface {
         binding.rvFoodMenu.layoutManager= LinearLayoutManager(context)
 
         binding.rvFoodMenu.adapter=ad
-        refresh()
+
 
         binding.fabFoodMenu.setOnClickListener{
             val view=LayoutInflater.from(context).inflate(R.layout.dialog_add_menu,null)
@@ -55,7 +62,7 @@ class FoodMenuFragment : Fragment(),AdapterInterface {
                 dialog.setView(view)
                 dialog.setPositiveButton("Add",{ dialogInterface: DialogInterface, i: Int ->
                     addMenu(view.editTextTextPersonName.text.toString())
-                    refresh()
+
                 })
                 dialog.create().show()
             }
@@ -93,6 +100,7 @@ class FoodMenuFragment : Fragment(),AdapterInterface {
 
         CoroutineScope(Dispatchers.IO).launch{
             foodMenuViewModel.addMenu(s)
+            refresh()
         }
     }
     private fun refresh(){
@@ -105,7 +113,7 @@ class FoodMenuFragment : Fragment(),AdapterInterface {
         TODO("Not yet implemented")
     }
 
-    override fun acceptOrder(_id: String, o: Order) {
+    override fun acceptOrder(_id: Int, o: Order) {
         TODO("Not yet implemented")
     }
 
@@ -116,13 +124,7 @@ class FoodMenuFragment : Fragment(),AdapterInterface {
             val l=lis.find{
                 it.category==category
             }
-            if (l != null) {
-                l.list.forEach {
-                    foodMenuViewModel.deleteFood(category,it)
-                    foodMenuViewModel.deleteImage(it.image)
 
-                }
-            }
             refresh()
         }
 

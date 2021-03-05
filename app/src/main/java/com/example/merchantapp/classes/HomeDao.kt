@@ -21,13 +21,13 @@ interface HomeDao {
 
 
 
-    @Query("DELETE FROM orders WHERE _id=:id")
+    @Query("DELETE FROM orders WHERE OID=:id")
     suspend fun removeOrder(id:String):Unit 
     
     @Query("DELETE FROM orders ")
     suspend fun clearOrder():Unit
 
-    @Query("SELECT * FROM orders WHERE _id=:id")
+    @Query("SELECT * FROM orders WHERE OID=:id")
     suspend fun getOrder(id:String):Order
 
 

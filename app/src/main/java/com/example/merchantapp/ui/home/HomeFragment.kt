@@ -20,7 +20,6 @@ import com.example.merchantapp.classes.DNASnackBar
 import com.example.merchantapp.databinding.FragmentHomeBinding
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,6 +30,7 @@ class HomeFragment : Fragment(),AdapterInterface {
 
     private lateinit var homeViewModel: HomeViewModel
     var pending:ArrayList<Order> =ArrayList()
+    var toBeAccepted:ArrayList<Order> =ArrayList()
     var processing:ArrayList<Order> =ArrayList()
 
     var riders:ArrayList<DeliveryBoy> =ArrayList()
@@ -62,14 +62,17 @@ class HomeFragment : Fragment(),AdapterInterface {
 
         })
 
-        val adapter= ViewPagerAdapter(pending,processing,requireContext(),this)
+        val adapter= ViewPagerAdapter(pending,processing,toBeAccepted,requireContext(),this)
         binding.vpHome.adapter=adapter
         TabLayoutMediator(binding.tbHome, binding.vpHome){ tab, position->
             if(position==0){
                 tab.text="Pending"
             }
-            else{
+            else if(position==1){
                 tab.text="Processing"
+            }
+            else if(position==2){
+                tab.text="To Be Accepted"
             }
 
         }.attach()
@@ -81,6 +84,13 @@ class HomeFragment : Fragment(),AdapterInterface {
             pending.clear()
             pending.addAll(it)
 
+            adapter.notifyDataSetChanged()
+
+
+        })
+        homeViewModel.toBeAccepted.observe(viewLifecycleOwner,{
+            toBeAccepted.clear()
+            toBeAccepted.addAll(it)
             adapter.notifyDataSetChanged()
 
 
@@ -109,11 +119,12 @@ class HomeFragment : Fragment(),AdapterInterface {
 
     }
 
-    override fun acceptOrder(_id: String, o: Order) {
+    override fun acceptOrder(_id: Int, o: Order) {
         CoroutineScope(Dispatchers.IO).launch {
             homeViewModel.dispatch(_id,o)
-            Log.d("HomeAccept",_id+o.toString())
+            Log.d("HomeAccept",_id.toString())
         }
+        refresh()
     }
 
     override fun deleteMenu(category: String) {

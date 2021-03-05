@@ -45,6 +45,8 @@ class PricesFragment : Fragment(){
                 binding.editTextNumber4.setText(price!!.price2.toString(), TextView.BufferType.EDITABLE)
                 binding.editTextNumber5.setText(price!!.dist3.toString(), TextView.BufferType.EDITABLE)
                 binding.editTextNumber6.setText(price!!.price3.toString(), TextView.BufferType.EDITABLE)
+                binding.editTextNumberDecimal.setText(price!!.minimumDistance.toString(), TextView.BufferType.EDITABLE)
+                binding.editTextNumberDecimal2.setText(price!!.minimumPrice.toString(), TextView.BufferType.EDITABLE)
 
             }
         }
@@ -60,6 +62,8 @@ class PricesFragment : Fragment(){
                     price?.price2 = binding.editTextNumber4.text.toString().toFloat()
                     price?.dist3 = binding.editTextNumber5.text.toString().toFloat()
                     price?.price3 = binding.editTextNumber6.text.toString().toFloat()
+                    price?.minimumDistance = binding.editTextNumberDecimal.text.toString().toFloat()
+                    price?.minimumPrice = binding.editTextNumberDecimal2.text.toString().toFloat()
                     price?.let { it1 -> api.uploadPrices(price = it1) }
 
                 }

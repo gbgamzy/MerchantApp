@@ -13,43 +13,34 @@ import java.util.*
 
 data class Order(
         @PrimaryKey(autoGenerate = false)
-        var _id:String,
-        var contents:List<Content>,
-        var price: Int,
-        var date: String,
-        var status:String,
-        var address:Address,
-        var customerPhone:String="",
-        var deliveryBoy: DeliveryBoy = DeliveryBoy("","")
+        var OID:Int?,
+        var contents:String?,
+        var price: Int?,
+        var date: String?,
+        var status:String?,
+        var AID:Int?,
+        var houseName:String?,
+        var streetAddress:String?,
+        var latitude:Double?,
+        var longitude:Double?,
+        var deliveryBoyName:String?,
+        var deliveryBoyPhone:String?,
+
+
+        var phone:String="",
+
+
 
 )
-@Parcelize
-data class ord(
-    var _id:String,
-    var contents:@RawValue List<Content>,
-    var price: Int,
-    var date: String,
-    var status:String,
-    var address:@RawValue Address,
-    var customerPhone:String="",
-    var deliveryBoy:@RawValue DeliveryBoy = DeliveryBoy("","")
 
 
-):Parcelable
-@Parcelize
-data class Rider(
-        var name:String?,
-        var phone:String?,
-        var orders: @RawValue List<ord>?
-
-):Parcelable
 data class Image(
         var name: String?,
         var image: Bitmap?
 )
 
 data class Food(
-
+        var category:String?,
         var name:String,
         var price:Int,
         var image:String,
@@ -92,8 +83,9 @@ class TypeConverter{
 
 }
 data class DeliveryBoy(
-    var name:String="",
-    var phone:String=""
+        var DbID:Int?,
+        var deliveryBoyName:String?,
+        var deliveryBoyPhone:String?,
 )
 data class Message(
     var message:String
@@ -109,6 +101,8 @@ data class Address(
     var longitude:Double,
 )
 data class Price(
+    var minimumDistance:Float?,
+    var minimumPrice:Float?,
     var dist1:Float?,
     var price1:Float?,
     var dist2:Float?,

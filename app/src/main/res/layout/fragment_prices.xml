@@ -39,10 +39,42 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <EditText
+            android:id="@+id/editTextNumberDecimal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:gravity="center"
+            android:hint="Minimum Order Price"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/editTextNumberDecimal2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:gravity="center"
+            android:hint="Delivery Price"
+            android:inputType="numberDecimal" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/linearLayout4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="60dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -56,7 +88,7 @@
             android:ems="10"
             android:gravity="center"
             android:hint="Dist1"
-            android:inputType="number" />
+            android:inputType="numberDecimal" />
 
         <EditText
             android:id="@+id/editTextNumber2"
@@ -66,7 +98,7 @@
             android:ems="10"
             android:gravity="center"
             android:hint="Price1"
-            android:inputType="number" />
+            android:inputType="numberDecimal" />
     </LinearLayout>
 
     <LinearLayout
@@ -86,7 +118,7 @@
             android:ems="10"
             android:gravity="center"
             android:hint="Dist2"
-            android:inputType="number" />
+            android:inputType="numberDecimal" />
 
         <EditText
             android:id="@+id/editTextNumber4"
@@ -96,7 +128,7 @@
             android:ems="10"
             android:gravity="center"
             android:hint="Price2"
-            android:inputType="number" />
+            android:inputType="numberDecimal" />
     </LinearLayout>
 
     <LinearLayout
@@ -116,7 +148,7 @@
             android:ems="10"
             android:gravity="center"
             android:hint="Dist3"
-            android:inputType="number" />
+            android:inputType="numberDecimal" />
 
         <EditText
             android:id="@+id/editTextNumber6"
@@ -125,8 +157,8 @@
             android:layout_weight="1"
             android:ems="10"
             android:gravity="center"
-            android:hint="Price1"
-            android:inputType="number" />
+            android:hint="Price3"
+            android:inputType="numberDecimal" />
     </LinearLayout>
 
     <Button

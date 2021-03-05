@@ -26,33 +26,46 @@ class FoodMenuViewModel @ViewModelInject constructor(val api: Network, val db: H
     suspend fun refresh(){
         val foodList:ArrayList<Food> = ArrayList()
         val images:ArrayList<Image> = ArrayList()
-        val l=api.getMenu().body()
-        Log.d("menu",l.toString())
-        var list:ArrayList<FoodMenu> =ArrayList()
-        l?.let { list.addAll(it) }
-        foodMenu.value=list
-        list.forEach {
-            foodList.addAll(it.list)
-
+        try{ val l = api.getMenu().body()
+            Log.d("menu",l.toString())
+            var list:ArrayList<FoodMenu> =ArrayList()
+            l?.let { list.addAll(it) }
+            foodMenu.value=list}
+        catch(err:Exception){
+            Log.d("Connecterror",err.toString())
         }
+
+
 
 
     }
 
     suspend fun deleteMenu(category:String){
 
-        api.deleteMenu(category)
+        try{ api.deleteMenu(category) }
+        catch(err:Exception){
+
+        }
 
     }
     suspend fun deleteFood(category: String, food: Food){
-        api.deleteFood(category,food.name)
+        try{ api.deleteFood(category, food.name)  }
+        catch(err:Exception){
+
+        }
     }
     suspend fun deleteImage(id: String){
-        api.deleteImage(id)
+        try{ api.deleteImage(id) }
+        catch(err:Exception){
+
+        }
     }
 
     suspend fun addMenu(category:String){
-        api.addMenu(category)
+        try{ api.addMenu(category) }
+        catch(err:Exception){
+
+        }
     }
 
 }

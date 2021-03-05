@@ -6,8 +6,7 @@ import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ajubamerchant.classes.Network
-import com.example.ajubamerchant.classes.Rider
-import com.example.ajubamerchant.classes.ord
+import com.example.ajubamerchant.classes.Order
 import com.example.merchantapp.adapters.CheckOrdersAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_check_orders.*
@@ -25,7 +24,7 @@ class CheckOrdersActivity : AppCompatActivity() {
     lateinit var api: Network
     var date:Date =Date()
     var adapter:CheckOrdersAdapter ?=null
-    var list:ArrayList<ord> =ArrayList()
+    var list:ArrayList<Order> =ArrayList()
     val formatter= SimpleDateFormat("dd MM yyyy HH.mm")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,12 +36,10 @@ class CheckOrdersActivity : AppCompatActivity() {
         calendarViewOrderList.visibility= View.VISIBLE
 
 
-        val phone = intent.extras?.getString("phone")
-        var p:List<ord> ?=null
+        val phone = intent.extras?.getInt("phone")
+        var p:List<Order> ?=null
         CoroutineScope(Dispatchers.IO).launch {
-            p = api.getRidersList().body()?.find {
-                it.phone == phone
-            }?.orders
+            p = phone?.let { api.getRiderOrders(it).body() }
             list.clear()
             p?.let { list.addAll(it) }
             Log.d("Size",list.toString())

@@ -7,19 +7,20 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.ajubamerchant.classes.DeliveryBoy
 import com.example.ajubamerchant.classes.FoodMenu
 import com.example.ajubamerchant.classes.Network
-import com.example.ajubamerchant.classes.Rider
+
 import com.example.merchantapp.classes.HomeDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class RiderViewModel @ViewModelInject constructor(val api: Network, application: Application) : AndroidViewModel(application) {
-    val riders:MutableLiveData<ArrayList<Rider>> = MutableLiveData()
+    val riders:MutableLiveData<ArrayList<DeliveryBoy>> = MutableLiveData()
     private val context = getApplication<Application>().applicationContext
     suspend fun reload(){
         try{
-            var list:ArrayList<Rider> =ArrayList()
+            var list:ArrayList<DeliveryBoy> =ArrayList()
             val p=api.getRidersList().body()
             if (p != null) {
                 list.addAll(p)
@@ -34,7 +35,7 @@ class RiderViewModel @ViewModelInject constructor(val api: Network, application:
         }
 
     }
-    suspend fun addRider(r:Rider){
+    suspend fun addRider(r:DeliveryBoy){
         try{ api.uploadRider(r)
 
             reload()}

@@ -17,7 +17,7 @@ interface   Network {
     suspend fun getDetails(@Path("phone") phone: String): Response<List<Order>>
 
     @POST("/Ajuba/acceptOrder/{id}")
-    suspend fun acceptOrder(@Path("id") id: String, @Body order: Order): Response<Message>
+    suspend fun acceptOrder(@Path("id") id: Int, @Body order: Order): Response<Message>
 
     @POST("/Ajuba/processOrder/{id}")
     suspend fun processOrders(@Path("id") id: String): Response<Message>
@@ -29,8 +29,6 @@ interface   Network {
     suspend fun getPendingOrders(): Response<List<Order>>
 
 
-    @GET("/Ajuba/admin/getDispatchedOrders")
-    suspend fun getDispatchedOrders(): Response<List<Order>>
 
     @GET("/Ajuba/admin/getProcessingOrders")
     suspend fun getProcessingOrders(): Response<List<Order>>
@@ -47,6 +45,9 @@ interface   Network {
 
     @GET("/Ajuba/customer/menu")
     suspend fun getMenu():Response<List<FoodMenu>>
+
+    @GET("/Ajuba/customer/food")
+    suspend fun getFood():Response<List<Food>>
 
     @GET("/Ajuba/images/{img_id}")
     suspend fun getImage(@Path("img_id") id:String ):Response<ResponseBody?>
@@ -78,10 +79,13 @@ interface   Network {
     suspend fun uploadPrices( @Body price: Price): Response<Message>
 
     @GET("/Ajuba/admin/getRidersList")
-    suspend fun getRidersList():Response<List<Rider>>
+    suspend fun getRidersList():Response<List<DeliveryBoy>>
+
+    @GET("/Ajuba/admin/rider/{id}/getOrders")
+    suspend fun getRiderOrders(@Path("id")id:Int):Response<List<Order>>
 
     @POST("/Ajuba/admin/getRidersList")
-    suspend fun uploadRider(@Body rider:Rider):Response<Message>
+    suspend fun uploadRider(@Body rider:DeliveryBoy):Response<Message>
     @DELETE("/Ajuba/admin/getRidersList/{phone}")
     suspend fun deleteRider(@Path("phone")phone:String):Response<Message>
 

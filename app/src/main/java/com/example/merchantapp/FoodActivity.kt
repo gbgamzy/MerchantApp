@@ -68,11 +68,10 @@ class FoodActivity : AppCompatActivity() {
     private suspend fun multipartImageUpload() {
         try {
             if(etFoodName.text.isNotEmpty() && etFoodPrice.text.isNotEmpty()) {
-                val b=Food(etFoodName.text.toString(),etFoodPrice.text.toString().toInt(),"",0)
-                var _id=api.addFood(intent.extras?.getString("category").toString(),b).body()
-                if (_id != null) {
-                    Log.d("Category",_id.message+intent.extras?.getString("category").toString())
-                }
+
+
+
+
                 val filesDir = applicationContext.filesDir
                 val file = File(filesDir, "image" + ".png")
                 val bos = ByteArrayOutputStream()
@@ -84,19 +83,24 @@ class FoodActivity : AppCompatActivity() {
                 fos.close()
                 val reqFile: RequestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
                 val body: MultipartBody.Part = MultipartBody.Part.createFormData("upload", file.name, reqFile)
-                val id: RequestBody = _id!!.message.toRequestBody("text/plain".toMediaTypeOrNull())
-                val p=api.postImage(body, id)
-                if(p.body()?.message  !="SUCCESS"){
-                    /*api.deleteImage(_id!!.message)
-                    api.deleteFood(intent.extras?.getString("category").toString(),b.name)*/
-                        Log.d("Iamge upload",p.body().toString())
-                    DNASnackBar.show(this,"There was some problem with your image")
+                val id: RequestBody? = intent.extras?.getString("category")?.toRequestBody("text/plain".toMediaTypeOrNull())
+
+                val p=api.postImage(body, id).body()
+                val b= p?.let {
+                    Food("",etFoodName.text.toString(),etFoodPrice.text.toString().toInt(),
+                            it.message,0)
                 }
-                else{
-                finish()}
+
+                var _id= b?.let { api.addFood(intent.extras?.getString("category").toString(), it).body() }
+                if(_id?.message=="SUCCESS"){
+                    finish()
+                }
+
+
             }
             else{
-                DNASnackBar.show(this,"Please Enter the Details!")
+                DNASnackBar.show(this,
+                        "Please Enter the Details!")
             }
         } catch (e: FileNotFoundException) {
             e.printStackTrace()

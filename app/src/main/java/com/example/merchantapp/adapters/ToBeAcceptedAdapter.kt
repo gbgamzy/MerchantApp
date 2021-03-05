@@ -1,34 +1,31 @@
-@file:Suppress("DEPRECATION")
-
 package com.example.merchantapp.adapters
 
+import android.app.AlertDialog
 import android.content.Context
-import android.util.Log
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.core.content.ContextCompat
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ajubamerchant.classes.AdapterInterface
 import com.example.ajubamerchant.classes.Order
-
+import com.example.merchantapp.OrderPanelActivity
 import com.example.merchantapp.R
 
-class CheckOrdersAdapter(
-    var list:ArrayList<Order>, val context: Context
+
+class ToBeAcceptedAdapter(
+        var list:ArrayList<Order>, val adapterInterface: AdapterInterface, val context:Context
 ) :
-
-    RecyclerView.Adapter<CheckOrdersAdapter.ViewHolder>(){
-    var name:String=""
-
+        RecyclerView.Adapter<ToBeAcceptedAdapter.ViewHolder>(){
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.ticket_view_pager, parent, false)
-        Log.d("riderOrder",list.toString())
-
+                .inflate(R.layout.ticket_view_pager, parent, false)
         return ViewHolder(itemView)
     }
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -36,24 +33,22 @@ class CheckOrdersAdapter(
         var name: TextView =view.findViewById(R.id.textView2)
 
         var price: TextView =view.findViewById(R.id.tvFoodPrice)
-        //var layout: LinearLayout =view.findViewById(R.id.llOrder)
+        var layout:LinearLayout=view.findViewById(R.id.llOrder)
 
 
 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.price.text= list[position].price.toString()
+        val p=list[position]
+        holder.price.text= p.price.toString()
 
 
-        holder.name.text=list[position].contents
-
-        if(list[position].status=="C"){
-            holder.image.setBackgroundDrawable(ContextCompat.getDrawable(context,R.drawable.order_status_accepted))
-        }
-        else if(list[position].status=="B"){
-            holder.image.setBackgroundDrawable(ContextCompat.getDrawable(context,R.drawable.order_status_processing))
-
+        holder.name.text=p.contents
+        holder.layout.setOnClickListener {
+            var dialog = AlertDialog.Builder(context)
+            dialog.setMessage(p.deliveryBoyName)
+            dialog.create().show()
         }
 
 
@@ -64,6 +59,5 @@ class CheckOrdersAdapter(
     override fun getItemCount(): Int {
         return list.size
     }
-
 
 }

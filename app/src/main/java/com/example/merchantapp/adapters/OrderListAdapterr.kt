@@ -39,11 +39,9 @@ class OrderListAdapterr(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.price.text= list[position].price.toString()
-        var s=""
-        list[position].contents.forEach {
-            s+= it.name+"x"+it.quantity+" "
-        }
-        holder.name.text=s
+
+
+        holder.name.text=list[position].contents
 
 
     }

@@ -14,14 +14,15 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ajubamerchant.classes.AdapterInterface
-import com.example.ajubamerchant.classes.Rider
+import com.example.ajubamerchant.classes.DeliveryBoy
+
 import com.example.merchantapp.CheckOrdersActivity
 import com.example.merchantapp.R
 import com.example.merchantapp.ui.riders.RiderFragment
 
 
 class RiderAdapter(
-        var list: ArrayList<Rider>, val adapterInterface: AdapterInterface, val context: Context
+        var list: ArrayList<DeliveryBoy>, val adapterInterface: AdapterInterface, val context: Context
 ) :
     RecyclerView.Adapter<RiderAdapter.ViewHolder>(){
 
@@ -47,20 +48,20 @@ class RiderAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val p = list[position]
-        holder.name.text = p.name
-        holder.price.text =p.phone
+        holder.name.text = p.deliveryBoyName
+        holder.price.text =p.deliveryBoyPhone
 
         holder.touch.setOnClickListener {
             val intent= Intent(context,CheckOrdersActivity::class.java)
 
-            intent.putExtra("phone",list[position].phone)
+            intent.putExtra("phone",list[position].DbID)
             startActivity(context,intent,null)
         }
         holder.delete.setOnClickListener{
             val dialog= AlertDialog.Builder(context)
             dialog.setTitle("Confirm delete?")
             dialog.setPositiveButton("Yes"){ dialogInterface: DialogInterface, i: Int ->
-                adapterInterface.deleteRider(p.phone)
+                adapterInterface.deleteRider(p.deliveryBoyPhone)
 
             }
             dialog.setNegativeButton("No"){ dialogInterface: DialogInterface, i: Int ->
