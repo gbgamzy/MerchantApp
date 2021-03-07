@@ -14,7 +14,7 @@ import java.util.*
 data class Order(
         @PrimaryKey(autoGenerate = false)
         var OID:Int?,
-        var contents:String?,
+        var contents:String,
         var price: Int?,
         var date: String?,
         var status:String?,
