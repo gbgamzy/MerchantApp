@@ -7,7 +7,7 @@ import com.example.ajubamerchant.classes.Order
 import com.example.ajubamerchant.classes.TypeConverter
 
 
-@Database(entities = [Order::class], version = 1,exportSchema = false)
+@Database(entities = [Order::class], version = 3,exportSchema = false)
 @TypeConverters(TypeConverter::class)
 
 

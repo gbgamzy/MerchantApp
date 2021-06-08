@@ -40,6 +40,7 @@ class FoodListAdapter(
 
         var delete: ImageButton = view.findViewById(R.id.buttonFoodListDelete)
         var image: ImageView = view.findViewById(R.id.ivFoodList)
+        var avail:Switch=view.findViewById(R.id.switch1)
 
 
 
@@ -48,11 +49,26 @@ class FoodListAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.name.text=list[position].name
 
+        holder.avail.isChecked = list[position].available==1
+
+        holder.avail.setOnCheckedChangeListener { _, state ->
+            if(state){
+                list[position].available=1
+                adapterInterface.enableItem(list[position].FUID)
+
+            }
+            else{
+                list[position].available=0
+                adapterInterface.disableItem(list[position].FUID)
+            }
+
+        }
+
 
         holder.delete.setOnClickListener{
             val dialog= AlertDialog.Builder(context)
             dialog.setTitle("Confirm delete?")
-            dialog.setPositiveButton("Yes"){ dialogInterface: DialogInterface, i: Int ->
+            dialog.setPositiveButton("Yes"){ _: DialogInterface, _: Int ->
                 adapterInterface.deleteFood(category,list[position])
 
             }

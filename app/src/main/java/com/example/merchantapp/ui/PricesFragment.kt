@@ -1,20 +1,16 @@
 package com.example.merchantapp.ui
 
 import android.os.Bundle
-import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.ajubamerchant.classes.Network
+import com.example.merchantapp.classes.Network
 import com.example.ajubamerchant.classes.Price
-import com.example.merchantapp.R
 import com.example.merchantapp.classes.DNASnackBar
-import com.example.merchantapp.databinding.FragmentGalleryBinding
 import com.example.merchantapp.databinding.FragmentPricesBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_prices.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -6,6 +6,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.merchantapp.classes.AppDatabase
 import com.example.merchantapp.classes.HomeDao
+import com.example.merchantapp.classes.Network
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +24,7 @@ object NetworkModule {
 
     @Provides
     fun providesBaseUrl(): String {
-        return "http://192.168.1.3:1234"
+        return "http://ajubabhaturewala.co.in"
     }
 
 
@@ -61,7 +62,7 @@ object NetworkModule {
             appContext,
             AppDatabase::class.java,
             "DbReader"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides

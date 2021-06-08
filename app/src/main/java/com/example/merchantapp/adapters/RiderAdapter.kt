@@ -7,10 +7,7 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ajubamerchant.classes.AdapterInterface
@@ -40,6 +37,7 @@ class RiderAdapter(
         var delete: ImageButton = view.findViewById(R.id.buttonFoodListDelete)
         var image: ImageView = view.findViewById(R.id.ivFoodList)
         var touch: LinearLayout = view.findViewById(R.id.llTouch)
+        var switch: Switch =view.findViewById(R.id.switch1)
 
 
 
@@ -48,13 +46,15 @@ class RiderAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val p = list[position]
+        holder.switch.visibility=View.GONE
+
         holder.name.text = p.deliveryBoyName
         holder.price.text =p.deliveryBoyPhone
 
         holder.touch.setOnClickListener {
             val intent= Intent(context,CheckOrdersActivity::class.java)
 
-            intent.putExtra("phone",list[position].DbID)
+            intent.putExtra("phone",list[position].deliveryBoyPhone)
             startActivity(context,intent,null)
         }
         holder.delete.setOnClickListener{

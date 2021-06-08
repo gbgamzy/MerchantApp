@@ -27,4 +27,9 @@
         android:name="com.example.merchantapp.ui.PricesFragment"
         android:label="Delivery Rates"
         tools:layout="@layout/fragment_prices" />
+    <fragment
+        android:id="@+id/nav_logout"
+        android:name="com.example.merchantapp.ui.LogOutFragment"
+        android:label="Delivery Rates"
+        tools:layout="@layout/fragment_prices" />
 </navigation>

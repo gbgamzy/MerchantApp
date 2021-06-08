@@ -14,6 +14,7 @@ import java.util.*
 data class Order(
         @PrimaryKey(autoGenerate = false)
         var OID:Int?,
+        var name:String?,
         var contents:String,
         var price: Int?,
         var date: String?,
@@ -23,8 +24,7 @@ data class Order(
         var streetAddress:String?,
         var latitude:Double?,
         var longitude:Double?,
-        var deliveryBoyName:String?,
-        var deliveryBoyPhone:String?,
+        var deliveryBoy:String?,
 
 
         var phone:String="",
@@ -32,7 +32,15 @@ data class Order(
 
 
 )
+data class Customer(
+    val phone:String?,
+    val name:String?,
+    val successCount:Int?,
+    val successPrice:Int?,
+    val failureCount:Int?,
+    val failurePrice:Int?
 
+)
 
 data class Image(
         var name: String?,
@@ -40,12 +48,13 @@ data class Image(
 )
 
 data class Food(
+        var FUID:Int?,
         var category:String?,
         var name:String,
         var price:Int,
         var image:String,
-        var quantity:Int=0
-
+        var quantity:Int=0,
+        var available:Int?
 )
 
 data class FoodMenu(

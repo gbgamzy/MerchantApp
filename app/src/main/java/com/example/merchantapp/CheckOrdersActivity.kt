@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.ajubamerchant.classes.Network
+import com.example.merchantapp.classes.Network
 import com.example.ajubamerchant.classes.Order
 import com.example.merchantapp.adapters.CheckOrdersAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,10 +36,10 @@ class CheckOrdersActivity : AppCompatActivity() {
         calendarViewOrderList.visibility= View.VISIBLE
 
 
-        val phone = intent.extras?.getInt("phone")
+        val phone = intent.extras?.getString("phone")
         var p:List<Order> ?=null
         CoroutineScope(Dispatchers.IO).launch {
-            p = phone?.let { api.getRiderOrders(it).body() }
+            p = api.getRiderOrders(phone!!).body()
             list.clear()
             p?.let { list.addAll(it) }
             Log.d("Size",list.toString())

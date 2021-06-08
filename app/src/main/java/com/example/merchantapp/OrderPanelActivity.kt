@@ -6,11 +6,8 @@ import android.net.Uri
 import  androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import com.example.ajubamerchant.classes.DeliveryBoy
-import com.example.ajubamerchant.classes.Network
+import com.example.merchantapp.classes.Network
 import com.example.ajubamerchant.classes.Order
 import com.example.merchantapp.classes.HomeDao
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,7 +15,6 @@ import kotlinx.android.synthetic.main.activity_order_panel.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 @AndroidEntryPoint
 class OrderPanelActivity  : AppCompatActivity() {
@@ -27,14 +23,14 @@ class OrderPanelActivity  : AppCompatActivity() {
 
     @Inject
     lateinit var db: HomeDao
-    var list: ArrayList<Order> = ArrayList()
+
     var order: Order? = null
 
-    var sc = 0
-    var sp = 0
-    var fc = 0
-    var fp = 0
-    var id = ""
+    var sc:Int?= 0
+    var sp :Int?= 0
+    var fc :Int?= 0
+    var fp :Int?= 0
+    var id = 0
     var phone = ""
 
 
@@ -42,14 +38,11 @@ class OrderPanelActivity  : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_order_panel)
         val extras: Bundle? = this.intent.extras
-        id = intent.getStringExtra("id").toString()
+        id = intent.getIntExtra("id",0)
         phone = intent.getStringExtra("phone").toString()
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                api.getDetails(phone).body()?.let {
-                    list.addAll(it)
-
-                }
+                val customer=api.getDetails(phone).body()
                 order = api.getOrder(id).body()
                 Log.d("vmOrder Panel",order.toString())
 
@@ -58,18 +51,11 @@ class OrderPanelActivity  : AppCompatActivity() {
                 tvcon.text = order?.contents
                 tvphone.text = phone
                 tvPrice.text = order?.price.toString()
-                list.forEach {
-                    if (it.status == "C") {
-                        sc++
-                        sp += it.price!!
+                sc=customer?.successCount
+                sp=customer?.successPrice
+                fc=customer?.failureCount
+                fp=customer?.failurePrice
 
-                    } else if (it.status == "D") {
-                        fc++
-                        fp += it.price!!
-
-                    }
-
-                }
                 tvfailedcount.text = fc.toString()
                 tvfailedprice.text = "Rs." + fp.toString()
                 tvsuccesscount.text = sc.toString()
@@ -120,7 +106,7 @@ class OrderPanelActivity  : AppCompatActivity() {
             dialog.setTitle("Reject Order?")
             dialog.setPositiveButton("Yes") { dialogInterface: DialogInterface, i: Int ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    Log.d("idaaaaa", id)
+                    Log.d("idaaaaa", id.toString())
                     if (id != null) {
                         val o = db.getOrder(id)
                         Log.d("idaaaaa", o.toString())

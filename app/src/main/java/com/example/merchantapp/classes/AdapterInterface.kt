@@ -6,6 +6,9 @@ interface AdapterInterface {
     abstract fun deleteMenu(category:String)
     abstract fun deleteRider(phone: String?)
     abstract fun deleteFood(category:String,food: Food)
+    abstract fun setRider(oid: Int, o: Order)
+    abstract fun enableItem(fuid: Int?)
+    abstract fun disableItem(fuid: Int?)
 
 
 }

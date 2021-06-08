@@ -20,7 +20,10 @@ import kotlinx.android.synthetic.main.dialog_add_menu.view.*
 import kotlinx.android.synthetic.main.fragment_gallery.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 @AndroidEntryPoint
 class FoodMenuFragment : Fragment(),AdapterInterface {
 
@@ -98,13 +101,21 @@ class FoodMenuFragment : Fragment(),AdapterInterface {
 
     private fun addMenu(s: String) {
 
+
         CoroutineScope(Dispatchers.IO).launch{
             foodMenuViewModel.addMenu(s)
+            withContext(Main){
+                binding.progressBarFoodMenu.visibility=View.VISIBLE
+            }
             refresh()
+            withContext(Main){
+                binding.progressBarFoodMenu.visibility=View.GONE
+            }
+
         }
     }
     private fun refresh(){
-        CoroutineScope(Dispatchers.Main).launch{
+        CoroutineScope(Main).launch{
             foodMenuViewModel.refresh()
         }
     }
@@ -118,7 +129,7 @@ class FoodMenuFragment : Fragment(),AdapterInterface {
     }
 
     override fun deleteMenu(category: String) {
-        CoroutineScope(Dispatchers.Main).launch{
+        CoroutineScope(Main).launch{
             DNALOG.show("delte menu",category)
             foodMenuViewModel.deleteMenu(category)
             val l=lis.find{
@@ -136,6 +147,18 @@ class FoodMenuFragment : Fragment(),AdapterInterface {
     }
 
     override fun deleteFood(category: String, food: Food) {
+        TODO("Not yet implemented")
+    }
+
+    override fun setRider(oid: Int, o: Order) {
+        TODO("Not yet implemented")
+    }
+
+    override fun enableItem(fuid: Int?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun disableItem(fuid: Int?) {
         TODO("Not yet implemented")
     }
 

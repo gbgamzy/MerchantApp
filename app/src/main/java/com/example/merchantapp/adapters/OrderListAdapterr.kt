@@ -14,12 +14,17 @@ import com.example.ajubamerchant.classes.AdapterInterface
 import com.example.ajubamerchant.classes.Order
 import com.example.merchantapp.OrderPanelActivity
 import com.example.merchantapp.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.text.SimpleDateFormat
 
 
+@Suppress("DEPRECATION")
 class OrderListAdapterr(
     var list:ArrayList<Order>, val adapterInterface: AdapterInterface, val context: Context
 ) :
     RecyclerView.Adapter<OrderListAdapterr.ViewHolder>(){
+    val formatter= SimpleDateFormat("dd MM yyyy HH.mm")
+    val format= SimpleDateFormat("HH:mm")
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -29,21 +34,45 @@ class OrderListAdapterr(
     }
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         var image: ImageView =view.findViewById(R.id.imageView5)
-        var name: TextView =view.findViewById(R.id.textView2)
+
+        var contents: TextView =view.findViewById(R.id.textView2)
+
+
+
         var price: TextView =view.findViewById(R.id.tvFoodPrice)
+        var name: TextView =view.findViewById(R.id.tvName)
+        var date: TextView =view.findViewById(R.id.tvDate)
+        var address: TextView =view.findViewById(R.id.tvAddress)
         var layout: LinearLayout =view.findViewById(R.id.llOrder)
+        var layout1: LinearLayout =view.findViewById(R.id.llOrder1)
+        var fabCustomer: FloatingActionButton = view.findViewById(R.id.fabCustomer)
+        var fabRider: FloatingActionButton = view.findViewById(R.id.fabRider)
+
 
 
 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.price.text= list[position].price.toString()
+        holder.price.text= "₹ "+list[position].price.toString()
+        val address=list[position].houseName+", "+list[position].streetAddress
+        holder.address.text=address
+        val i=formatter.parse(list[position].date)
+
+        var date=format.format(i)
+        holder.date.text=date
+        holder.contents.text=list[position].contents
+        holder.name.text=list[position].name
 
 
-        holder.name.text=list[position].contents
 
+        if(list[position].status=="C"){
+            holder.image.setBackgroundDrawable(ContextCompat.getDrawable(context,R.drawable.order_status_accepted))
+        }
+        else if(list[position].status=="B"){
+            holder.image.setBackgroundDrawable(ContextCompat.getDrawable(context,R.drawable.order_status_processing))
 
+        }
     }
 
 

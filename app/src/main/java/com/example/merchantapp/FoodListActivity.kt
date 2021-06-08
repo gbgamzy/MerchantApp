@@ -5,9 +5,11 @@ import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ajubamerchant.classes.*
 import com.example.merchantapp.adapters.FoodListAdapter
+import com.example.merchantapp.classes.Network
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_food_list.*
 import kotlinx.coroutines.CoroutineScope
@@ -50,103 +52,118 @@ class FoodListActivity : AppCompatActivity(), AdapterInterface {
             intent.putExtra("category",category)
             startActivity(intent)
         }
-        try{
-            reload()
-        }
-        catch(err: Exception){
-            Log.d("imageError",err.toString())
-        }
+
 
 
 
 
 
     }
-    fun reload(){
+    private fun reload(){
         CoroutineScope(Dispatchers.Main).launch {
-            val list: ArrayList<Food> = ArrayList()
-            api.getFood().body()?.forEach {
-                if(it.category==category){
-                    list.add(it)
-                }
-            }
 
-
-            d.clear()
-
-            d.addAll(list)
-
-            Log.d("FoodListDList",d.toString())
             try{
-                reloadImages(d)
+                progressBarFoodItem.visibility= View.VISIBLE
+                val list: ArrayList<Food> = ArrayList()
+                api.getFood().body()?.forEach {
+                    if (it.category == category) {
+                        list.add(it)
+
+                    }
+                }
+                Log.d("FoodListDList", list.toString())
+
+
+                d.clear()
+
+                d.addAll(list)
+
+
+                try {
+                    reloadImages(d)
+                } catch (err: Exception) {
+                    Log.d("Iteratr error ", err.toString())
+                }
+
+
+                adapter.notifyDataSetChanged()
+                progressBarFoodItem.visibility= View.GONE
+
             }
             catch(err:Exception){
-                Log.d("Iteratr error ",err.toString())
+                progressBarFoodItem.visibility= View.GONE
+                Log.d("Connection Error", err.toString())
             }
-
-
-            adapter.notifyDataSetChanged()
-
-
 
         }
     }
     suspend fun reloadImages(foodList: ArrayList<Food>) {
-        var images=ArrayList<Image>()
-        foodList.forEach{
+        try{
+            var images = ArrayList<Image>()
+            foodList.forEach {
 
 
+                var body = api.getImage(it.image)?.body()
+                if (body != null) {
+                    val futureStudioIconFile: File =
+                        File(this.getExternalFilesDir(null), File.separator + it.name + ".jpg")
 
-            var body=api.getImage(it.image)?.body()
-            if(body!=null){
-            val futureStudioIconFile: File = File(this.getExternalFilesDir(null), File.separator + it.name + ".jpg")
+                    var inputStream: InputStream? = null
+                    var outputStream: OutputStream? = null
 
-            var inputStream: InputStream?=null
-            var outputStream: OutputStream?=null
+                    val fileReader = ByteArray(4096)
+                    val fileSize = body!!.contentLength()
+                    var fileSizeDownloaded: Long = 0
+                    inputStream = body.byteStream()
+                    outputStream = FileOutputStream(futureStudioIconFile)
 
-            val fileReader = ByteArray(4096)
-            val fileSize = body!!.contentLength()
-            var fileSizeDownloaded: Long = 0
-            inputStream=body.byteStream()
-            outputStream= FileOutputStream(futureStudioIconFile)
-
-            while (true) {
-                var read = inputStream.read(fileReader)
+                    while (true) {
+                        var read = inputStream.read(fileReader)
 
 
-                if (read == -1) {
-                    break
+                        if (read == -1) {
+                            break
+                        }
+                        outputStream.write(fileReader, 0, read)
+                        fileSizeDownloaded += read
+
+                    }
+                    outputStream.flush()
+                    inputStream.close()
+                    outputStream.close()
                 }
-                outputStream.write(fileReader, 0, read)
-                fileSizeDownloaded +=read
+
 
             }
-            outputStream.flush()
-            inputStream.close()
-            outputStream.close()
-            }
-
-
-
-
-
-
+            getImages(foodList)
+            progressBarFoodItem.visibility= View.GONE
         }
-        getImages(foodList)
-
+        catch(err:Exception){
+            Log.d("ERRROR",err.toString())
+            progressBarFoodItem.visibility= View.GONE
+        }
 
 
     }
     suspend fun getImages(foodList: List<Food>){
-        var images=ArrayList<Image>()
-        foodList.forEach {
+        try{
+            var images = ArrayList<Image>()
+            foodList.forEach {
 
-            var image= BitmapFactory.decodeFile(this.getExternalFilesDir(null).toString() + File.separator + it.name + ".jpg")
-            var img=Image(name = it.name,image = image)
-            images.add(img)
+                var image = BitmapFactory.decodeFile(
+                    this.getExternalFilesDir(null).toString() + File.separator + it.name + ".jpg"
+                )
+                var img = Image(name = it.name, image = image)
+                images.add(img)
+            }
+            i.clear()
+            i.addAll(images)
+            progressBarFoodItem.visibility= View.GONE
         }
-        i.clear()
-        i.addAll(images)
+        catch(err:Exception){
+            Log.d("Image Get",err.toString())
+            progressBarFoodItem.visibility= View.GONE
+        }
     }
 
     override fun getRiders1(): ArrayList<DeliveryBoy> {
@@ -170,9 +187,40 @@ class FoodListActivity : AppCompatActivity(), AdapterInterface {
         CoroutineScope(Dispatchers.Main).launch {
         api.deleteFood(category,food.name)
             api.deleteImage(food.image)
+            reload()
 
 
         }
-        reload()
+
+    }
+
+    override fun setRider(oid: Int, o: Order) {
+        TODO("Not yet implemented")
+    }
+
+    override fun enableItem(fuid: Int?) {
+        CoroutineScope(Dispatchers.IO).launch{
+            try{
+                if (fuid != null) {
+                    Log.d("Enbale ",api.enableItem(fuid).toString())
+                }
+            }
+            catch(err:Exception){
+                Log.d("Enbale Disbale",err.toString())
+            }
+        }
+    }
+
+    override fun disableItem(fuid: Int?) {
+        CoroutineScope(Dispatchers.IO).launch{
+            try{
+                if (fuid != null) {
+                    api.disableItem(fuid)
+                }
+            }
+            catch(err:Exception){
+                Log.d("Enbale Disbale",err.toString())
+            }
+        }
     }
 }

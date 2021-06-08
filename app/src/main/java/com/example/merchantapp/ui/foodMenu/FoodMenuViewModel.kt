@@ -1,7 +1,6 @@
 package com.example.merchantapp.ui.foodMenu
 
 import android.app.Application
-import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
@@ -9,13 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import com.example.ajubamerchant.classes.Food
 import com.example.ajubamerchant.classes.FoodMenu
 import com.example.ajubamerchant.classes.Image
-import com.example.ajubamerchant.classes.Network
-import com.example.merchantapp.classes.DNALOG
+import com.example.merchantapp.classes.Network
 import com.example.merchantapp.classes.HomeDao
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
-import java.io.OutputStream
 
 class FoodMenuViewModel @ViewModelInject constructor(val api: Network, val db: HomeDao, application: Application) : AndroidViewModel(application) {
     val images1:MutableLiveData<ArrayList<Image>> = MutableLiveData()

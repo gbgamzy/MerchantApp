@@ -1,6 +1,7 @@
-package com.example.ajubamerchant.classes
+package com.example.merchantapp.classes
 
 
+import com.example.ajubamerchant.classes.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -13,20 +14,42 @@ interface   Network {
     suspend fun login(@Path("phone")phone:String , @Path("registrationToken")registrationToken:String)
     :Response<Message>
 
+    @POST("/Ajuba/admin/logout")
+    suspend fun logout()
+            :Response<Message>
+
+
     @GET("/Ajuba/admin/getDetails/{phone}")
-    suspend fun getDetails(@Path("phone") phone: String): Response<List<Order>>
+    suspend fun getDetails(@Path("phone") phone: String): Response<Customer>
 
     @POST("/Ajuba/acceptOrder/{id}")
-    suspend fun acceptOrder(@Path("id") id: Int, @Body order: Order): Response<Message>
+    suspend fun acceptOrder(@Path("id") id: Int, @Body order: Order)
+
+    @POST("/Ajuba/setRider/{id}")
+    suspend fun setRider(@Path("id") id: Int, @Body order: Order): Response<Message>
 
     @POST("/Ajuba/processOrder/{id}")
-    suspend fun processOrders(@Path("id") id: String): Response<Message>
+    suspend fun processOrders(@Path("id") id: Int): Response<Message>
 
     @POST("/Ajuba/rejectOrder/{id}")
-    suspend fun rejectOrders(@Path("id") id: String, @Body order: Order): Response<Message>
+    suspend fun rejectOrders(@Path("id") id: Int, @Body order: Order): Response<Message>
+
+    @POST("/Ajuba/admin/foodMenu/{fuid}/0")
+    suspend fun disableItem(@Path("fuid") fuid: Int)
+
+    @POST("/Ajuba/admin/foodMenu/{fuid}/1")
+    suspend fun enableItem(@Path("fuid") fuid: Int)
 
     @GET("/Ajuba/admin/getPendingOrders")
     suspend fun getPendingOrders(): Response<List<Order>>
+
+    @GET("/Ajuba/admin/getDispatchedOrders")
+    suspend fun getDispatchedOrders(): Response<List<Order>>
+
+    @GET("Ajuba/admin/orders/{day}/{month}/{year}")
+    suspend fun getTodayOrders(@Path("day") day:String,@Path("month") month:String
+        ,@Path("year") year:String):
+            Response<List<Order>>
 
 
 
@@ -34,7 +57,7 @@ interface   Network {
     suspend fun getProcessingOrders(): Response<List<Order>>
 
     @GET("/Ajuba/admin/getOrder/{id}")
-    suspend fun getOrder(@Path("id") id: String):Response<Order>
+    suspend fun getOrder(@Path("id") id: Int):Response<Order>
 
     @GET("/Ajuba/admin/getRiders")
     suspend fun getRiders():Response<List<DeliveryBoy>>
@@ -64,7 +87,7 @@ interface   Network {
 
 
     @POST("/Ajuba/admin/foodMenu/{category}/food")
-    suspend fun addFood(@Path("category")category:String,@Body food:Food):Response<Message>
+    suspend fun addFood(@Path("category")category:String,@Body food: Food):Response<Message>
 
 
 
@@ -82,13 +105,15 @@ interface   Network {
     suspend fun getRidersList():Response<List<DeliveryBoy>>
 
     @GET("/Ajuba/admin/rider/{id}/getOrders")
-    suspend fun getRiderOrders(@Path("id")id:Int):Response<List<Order>>
+    suspend fun getRiderOrders(@Path("id")id:String):Response<List<Order>>
 
     @POST("/Ajuba/admin/getRidersList")
-    suspend fun uploadRider(@Body rider:DeliveryBoy):Response<Message>
+    suspend fun uploadRider(@Body rider: DeliveryBoy):Response<Message>
     @DELETE("/Ajuba/admin/getRidersList/{phone}")
     suspend fun deleteRider(@Path("phone")phone:String):Response<Message>
 
+    @GET("/Ajuba/getAdmin")
+    suspend fun getAdmin():Response<Admin>
 
 
 

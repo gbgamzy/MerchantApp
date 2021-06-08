@@ -1,7 +1,9 @@
-@file:Suppress("DEPRECATION")
+
 
 package com.example.merchantapp.ui.home
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,19 +21,31 @@ import com.example.merchantapp.adapters.ViewPagerAdapter
 import com.example.merchantapp.classes.DNASnackBar
 import com.example.merchantapp.databinding.FragmentHomeBinding
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(),AdapterInterface {
 
+
     private lateinit var homeViewModel: HomeViewModel
     var pending:ArrayList<Order> =ArrayList()
-    var toBeAccepted:ArrayList<Order> =ArrayList()
+    var dispatched:ArrayList<Order> =ArrayList()
     var processing:ArrayList<Order> =ArrayList()
+    var todayOrders:ArrayList<Order> =ArrayList()
+    val formatter= SimpleDateFormat("dd MM yyyy HH.mm")
+    var date: Date?=Date()
+
+    lateinit var pref: SharedPreferences
+    lateinit var edit: SharedPreferences.Editor
+
 
     var riders:ArrayList<DeliveryBoy> =ArrayList()
     private var _binding: FragmentHomeBinding? = null
@@ -40,6 +54,7 @@ class HomeFragment : Fragment(),AdapterInterface {
 
     override fun onResume() {
         super.onResume()
+
         refresh()
 
     }
@@ -49,6 +64,7 @@ class HomeFragment : Fragment(),AdapterInterface {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
+
         homeViewModel =
                 ViewModelProvider(this).get(HomeViewModel::class.java)
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -61,9 +77,14 @@ class HomeFragment : Fragment(),AdapterInterface {
 
 
         })
+        pref= activity?.getSharedPreferences("appSharedPrefs", Context.MODE_PRIVATE)!!
 
-        val adapter= ViewPagerAdapter(pending,processing,toBeAccepted,requireContext(),this)
+        edit=pref.edit()
+
+        val adapter= ViewPagerAdapter(pending,processing,dispatched,requireContext(),this,todayOrders)
         binding.vpHome.adapter=adapter
+        binding.tbHome.isInlineLabel=true
+
         TabLayoutMediator(binding.tbHome, binding.vpHome){ tab, position->
             if(position==0){
                 tab.text="Pending"
@@ -72,7 +93,11 @@ class HomeFragment : Fragment(),AdapterInterface {
                 tab.text="Processing"
             }
             else if(position==2){
-                tab.text="To Be Accepted"
+                tab.text="Dispatched"
+
+            }
+            else if(position==3){
+                tab.text="Completed"
             }
 
         }.attach()
@@ -88,9 +113,17 @@ class HomeFragment : Fragment(),AdapterInterface {
 
 
         })
-        homeViewModel.toBeAccepted.observe(viewLifecycleOwner,{
-            toBeAccepted.clear()
-            toBeAccepted.addAll(it)
+        homeViewModel.todayOrder?.observe(viewLifecycleOwner,Observer<ArrayList<Order>>{
+            todayOrders.clear()
+            todayOrders.addAll(it)
+
+            adapter.notifyDataSetChanged()
+
+
+        })
+        homeViewModel.dispatched.observe(viewLifecycleOwner,{
+            dispatched.clear()
+            dispatched.addAll(it)
             adapter.notifyDataSetChanged()
 
 
@@ -120,7 +153,7 @@ class HomeFragment : Fragment(),AdapterInterface {
     }
 
     override fun acceptOrder(_id: Int, o: Order) {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             homeViewModel.dispatch(_id,o)
             Log.d("HomeAccept",_id.toString())
         }
@@ -139,12 +172,48 @@ class HomeFragment : Fragment(),AdapterInterface {
         TODO("Not yet implemented")
     }
 
+    override fun setRider(oid: Int, o: Order) {
+        CoroutineScope(Dispatchers.Main).launch {
+            homeViewModel.setRider(oid, o)
+        }
+    }
+
+    override fun enableItem(fuid: Int?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun disableItem(fuid: Int?) {
+        TODO("Not yet implemented")
+    }
+
     fun refresh(){
 
         try{
             CoroutineScope(Dispatchers.Main).launch {
                 try {
-                    homeViewModel.refreshHome()
+                    var token=""
+                    FirebaseMessaging.getInstance().token.addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            token= it.result.toString()
+
+
+                        }
+                    }
+
+                    pref.getString("phone","786")?.let { homeViewModel.refreshHome(it,token) }
+                    var d=""
+                    var m=""
+                    if(date?.date.toString().length==1)
+                        d="0"+date?.date.toString()
+                    else
+                        d=date?.date.toString()
+                    if(((date?.month)?.plus(1)).toString().length==1)
+                        m="0"+((date?.month)?.plus(1)).toString()
+                    else
+                        m=((date?.month)?.plus(1)).toString()
+
+
+                    homeViewModel.getTodayOrders(d,m,(1900+ date?.year!!).toString())
                 } catch (err: Exception) {
                     Log.d("vmHomeRefresh", err.toString())
                 }

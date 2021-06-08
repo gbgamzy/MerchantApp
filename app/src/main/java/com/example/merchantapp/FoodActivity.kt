@@ -1,25 +1,25 @@
-@file:Suppress("DEPR ECATION")
+
 
 package com.example.merchantapp
 
-import android.Manifest.permission.*
 import android.app.Activity
-import android.content.ComponentName
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ajubamerchant.classes.Food
-import com.example.ajubamerchant.classes.Network
+import com.example.merchantapp.classes.Network
 import com.example.merchantapp.classes.DNASnackBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_food.*
+import kotlinx.android.synthetic.main.activity_food_list.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,7 +27,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.create
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.*
 import javax.inject.Inject
@@ -60,8 +59,17 @@ class FoodActivity : AppCompatActivity() {
         }
 
         btFoodDone.setOnClickListener {
-            CoroutineScope(Dispatchers.Main).launch {
-            uploadImage()}
+            try{
+                CoroutineScope(Dispatchers.Main).launch {
+                    progressBar.visibility = View.VISIBLE
+                    uploadImage()
+                    progressBar.visibility = View.GONE
+
+                }
+            }
+            catch(err:Exception){
+                DNASnackBar.show(applicationContext,err.toString())
+            }
         }
 
     }
@@ -85,15 +93,21 @@ class FoodActivity : AppCompatActivity() {
                 val body: MultipartBody.Part = MultipartBody.Part.createFormData("upload", file.name, reqFile)
                 val id: RequestBody? = intent.extras?.getString("category")?.toRequestBody("text/plain".toMediaTypeOrNull())
 
-                val p=api.postImage(body, id).body()
-                val b= p?.let {
-                    Food("",etFoodName.text.toString(),etFoodPrice.text.toString().toInt(),
-                            it.message,0)
-                }
+                try{ val p = api.postImage(body, id).body()
+                Log.d("ianmageds",p.toString()+"xx"+body.toString())
+                    val b= p?.let {
+                        Food(0,"",etFoodName.text.toString(),etFoodPrice.text.toString().toInt(),
+                            it.message,0,1)
+                    }
 
-                var _id= b?.let { api.addFood(intent.extras?.getString("category").toString(), it).body() }
-                if(_id?.message=="SUCCESS"){
-                    finish()
+                    var _id= b?.let { api.addFood(intent.extras?.getString("category").toString(), it).body() }
+                    if(_id?.message=="SUCCESS"){
+                        finish()
+                    }
+                }
+                catch(err:Exception){
+                    Log.d("Image Error",err.toString())
+                    progressBar.visibility = View.GONE
                 }
 
 
@@ -103,8 +117,10 @@ class FoodActivity : AppCompatActivity() {
                         "Please Enter the Details!")
             }
         } catch (e: FileNotFoundException) {
+            progressBar.visibility = View.GONE
             e.printStackTrace()
         } catch (e: IOException) {
+            progressBar.visibility = View.GONE
             e.printStackTrace()
         }
     }
@@ -132,7 +148,19 @@ class FoodActivity : AppCompatActivity() {
                 REQUEST_CODE_PICK_IMAGE -> {
                     selectedImageUri = data?.data
                     ivFoodImage.setImageURI(selectedImageUri)
-                    mBitmap=MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri)
+                    if(Build.VERSION.SDK_INT < 28) {
+                        @Suppress("DEPRECATION")
+                        mBitmap=MediaStore.Images.Media.getBitmap(this.contentResolver, selectedImageUri)
+                    } else {
+                        val source = selectedImageUri?.let {
+                            ImageDecoder.createSource(this.contentResolver,
+                                it
+                            )
+                        }
+                        mBitmap = source?.let { ImageDecoder.decodeBitmap(it) }
+
+                    }
+
                 }
             }
         }

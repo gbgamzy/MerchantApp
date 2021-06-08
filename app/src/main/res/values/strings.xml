@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MerchantApp</string>
+    <string name="app_name">Ajuba Merchant</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -10,6 +10,7 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string name="default_notification_channel">AjubaMerchantMainNotification</string>
     <string name="msg_token_fmt" />
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

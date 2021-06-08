@@ -10,17 +10,15 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import com.example.ajubamerchant.classes.Network
+import com.example.merchantapp.classes.Network
 import com.example.merchantapp.classes.DNASnackBar
 import com.example.merchantapp.classes.HomeDao
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseException
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthProvider
-import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.auth.*
+
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.CoroutineScope
@@ -28,7 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-@Suppress("DEPRECATION")
+
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
     @Inject
@@ -38,6 +36,8 @@ class LoginActivity : AppCompatActivity() {
     private var verificationId: String=""
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
+    var logging:Boolean=false
+    var state:Int=1
 
     lateinit var pref: SharedPreferences
     lateinit var edit: SharedPreferences.Editor
@@ -54,10 +54,11 @@ class LoginActivity : AppCompatActivity() {
 
         pref=this.getSharedPreferences("appSharedPrefs", Context.MODE_PRIVATE)
         edit=pref.edit()
-        if(pref.getBoolean("loggedIn",false)==true &&
-            FirebaseInstanceId.getInstance().token.toString()==pref.getString("reg","")){
+        if(pref.getBoolean("loggedIn",false) ){
+            Log.d("logging in ","logging in")
             val intent = Intent(this@LoginActivity, MainActActivity::class.java)
             startActivity(intent, null)
+            finish()
         }
         imageButtonLogin.setOnClickListener {
 
@@ -65,6 +66,7 @@ class LoginActivity : AppCompatActivity() {
                 verifyCode(editTextOtp.text.toString())
             }
             catch(err:Exception){
+
 
                 DNASnackBar.show(this,"Some Error Occurred!")
             }
@@ -77,13 +79,13 @@ class LoginActivity : AppCompatActivity() {
             }
             else{
 
-            PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                "+91$s",
-                60,
-                TimeUnit.SECONDS,
-                this,
-                mCallBack
-            );
+                val options = PhoneAuthOptions.newBuilder(mAuth)
+                    .setPhoneNumber("+91$s") // Phone number to verify
+                    .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                    .setActivity(this) // Activity (for callback binding)
+                    .setCallbacks(mCallBack) // OnVerificationStateChangedCallbacks
+                    .build()
+                PhoneAuthProvider.verifyPhoneNumber(options)
             buttonBack.visibility= View.GONE
             editTextPhone.visibility= View.GONE
             imageButtonLogin.visibility= View.VISIBLE
@@ -102,7 +104,12 @@ class LoginActivity : AppCompatActivity() {
     }
     private fun verifyCode(code: String) {
         val credential = PhoneAuthProvider.getCredential(verificationId!!, code)
+        progressBar2.visibility=View.VISIBLE
         signInWithCredential(credential)
+
+
+
+
     }
 
     private fun signInWithCredential(credential: PhoneAuthCredential) {
@@ -110,38 +117,73 @@ class LoginActivity : AppCompatActivity() {
                 .addOnCompleteListener(object : OnCompleteListener<AuthResult?> {
                     override fun onComplete(task: Task<AuthResult?>) {
                         if (task.isSuccessful()) {
+                            var refreshedToken=""
 
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val refreshedToken = FirebaseInstanceId.getInstance().token
+                            try{
+                                FirebaseMessaging.getInstance().token.addOnCompleteListener {
+                                    if (it.isSuccessful) {
+                                        refreshedToken = it.result.toString()
+                                        Log.d("REGTOKEN", "SUCCESS" + refreshedToken)
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            val p = api.login(
+                                                editTextPhone.text.toString(),
+                                                refreshedToken
+                                            )
 
-                                    val p=api.login(editTextPhone.text.toString(), refreshedToken.toString())
-                                Log.d("p",p.body().toString())
-                                    if(p.body()?.message  =="SUCCESS"){
-                                        edit.putBoolean("loggedIn",true)
-                                        edit.putString("reg",refreshedToken.toString())
-                                        edit.apply()
-                                        edit.commit()
-                                        val intent = Intent(this@LoginActivity, MainActActivity::class.java)
-                                        startActivity(intent, null)
+                                            Log.d("p", p.body().toString())
+                                            if(p.body()?.message=="SUCCESS") {
 
-                                }
-                                else{
-                                    DNASnackBar.show(this@LoginActivity,"You are not an Admin")
+                                                edit.putBoolean("loggedIn", true)
+                                                edit.putString("reg", refreshedToken)
+                                                edit.putString(
+                                                    "phone",
+                                                    editTextPhone.text.toString()
+                                                )
+                                                edit.apply()
+                                                edit.commit()
+                                                progressBar2.visibility = View.GONE
+                                                val intent =
+                                                    Intent(
+                                                        this@LoginActivity,
+                                                        MainActActivity::class.java
+                                                    )
+
+                                                if (state == 1) {
+                                                    state = 0
+                                                    startActivity(intent, null)
+                                                    finish()
+                                                    state = 1
+                                                }
+
+                                            }
+                                            else{
+                                                DNASnackBar.show(applicationContext,"You are not an admin")
+                                                progressBar2.visibility=View.GONE
+
+                                            }
+
+
+
+                                        }
+
                                     }
-
-
-
+                                    if (it.isCanceled) {
+                                        Log.d("REGTOKENCANCELLED", it.result.toString())
+                                    }
+                                }
 
                             }
+                            catch(err:java.lang.Exception){
+                                Log.d("REGTOKENERROR", err.toString())
+                                progressBar2.visibility=View.GONE
+                                DNASnackBar.show(this@LoginActivity,"There seems to be some problem from our end")
 
-                        } else {
-                            Toast.makeText(
-                                    this@LoginActivity,
-                                    task.getException().toString(),
-                                    Toast.LENGTH_LONG
-                            ).show()
-                            Log.d("errrr", task.exception?.message.toString())
+                                logging=false
+
+                            }
                         }
+
+
                     }
                 })
     }

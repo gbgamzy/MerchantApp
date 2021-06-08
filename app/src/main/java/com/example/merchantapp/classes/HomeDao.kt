@@ -28,7 +28,7 @@ interface HomeDao {
     suspend fun clearOrder():Unit
 
     @Query("SELECT * FROM orders WHERE OID=:id")
-    suspend fun getOrder(id:String):Order
+    suspend fun getOrder(id: kotlin.Int):Order
 
 
 

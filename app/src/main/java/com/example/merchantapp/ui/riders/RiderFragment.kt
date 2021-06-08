@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ajubamerchant.classes.*
 import com.example.merchantapp.R
 import com.example.merchantapp.adapters.RiderAdapter
+import com.example.merchantapp.classes.DNASnackBar
 import com.example.merchantapp.databinding.FragmentSlideshowBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.dialog_add_rider.*
@@ -53,12 +54,28 @@ class RiderFragment : Fragment(),AdapterInterface {
             dialog.setView(view)
             dialog.setTitle("Add Rider")
             dialog.setPositiveButton("Done"){ dialogInterface: DialogInterface, i: Int ->
-                var r:DeliveryBoy = DeliveryBoy(0,view.etRiderName.text.toString() ,view.etRiderPhone.text.toString())
-                Log.d("vmvmRider",r.toString())
-               CoroutineScope(Dispatchers.IO).launch{
 
-                   riderViewModel.addRider(r)
-               }
+                if(view.etRiderName.text.toString().isEmpty() || view.etRiderName.text.toString().length>30){
+                    DNASnackBar.show(context,"Rider name should be less than 30 characters")
+                }
+                else {
+                    if(view.etRiderPhone.text.toString().length!=10){
+                        DNASnackBar.show(context,"Enter valid number")
+                    }
+                    else{
+                    var r: DeliveryBoy = DeliveryBoy(
+                        0,
+                        view.etRiderName.text.toString(),
+                        view.etRiderPhone.text.toString()
+                    )
+                    Log.d("vmvmRider", r.toString())
+                    CoroutineScope(Dispatchers.IO).launch {
+
+                        riderViewModel.addRider(r)
+                    }
+                    }
+                }
+
 
             }
 
@@ -108,6 +125,18 @@ class RiderFragment : Fragment(),AdapterInterface {
     }
 
     override fun deleteFood(category: String, food: Food) {
+        TODO("Not yet implemented")
+    }
+
+    override fun setRider(oid: Int, o: Order) {
+        TODO("Not yet implemented")
+    }
+
+    override fun enableItem(fuid: Int?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun disableItem(fuid: Int?) {
         TODO("Not yet implemented")
     }
 }
