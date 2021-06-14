@@ -34,6 +34,8 @@ class CustomMessagingService: FirebaseMessagingService() {
 
     override fun onMessageReceived(p0: RemoteMessage) {
         super.onMessageReceived(p0)
+
+        Log.d("ajubaNotification",p0.data.toString())
         //sound=
         val title=p0.data["title"]
         val message=p0.data["body"]
